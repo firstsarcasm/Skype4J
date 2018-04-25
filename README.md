@@ -1,4 +1,5 @@
 # Skype4J
+[![](https://jitpack.io/v/firstsarcasm/Skype4J.svg)](https://jitpack.io/#firstsarcasm/Skype4J/v0.1.5.1)
 
 Here is an example of using this API to log into your Skype account.
 
@@ -30,6 +31,11 @@ skype.getEventDispatcher().registerListener(new Listener() {
 skype.subscribe();
 // Do stuff
 skype.logout();
+```
+
+Proxy using
+```java
+Skype skype = new SkypeBuilder(username, password).withProxy(host, port).withAllResources().build();
 ```
 
 For more examples, please consult the [wiki](https://github.com/samczsun/Skype4J/wiki)
