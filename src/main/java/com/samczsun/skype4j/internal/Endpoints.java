@@ -24,22 +24,18 @@ import com.samczsun.skype4j.internal.utils.Encoder;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static com.samczsun.skype4j.SkypeBuilder.proxy;
 public class Endpoints {
     private static Map<Class<?>, Converter<?>> converters = new HashMap<>();
 
@@ -300,19 +296,19 @@ public class Endpoints {
         }
 
         public E_TYPE post(JsonValue json) throws ConnectionException {
-            return header("Content-Type", "application/json").connect("POST", json.toString());
+            return header("X-Client-Version", "0/0.0.0.0").header("Content-Type", "application/json").connect("POST", json.toString());
         }
 
         public E_TYPE put() throws ConnectionException {
-            return connect("PUT", new byte[0]);
+            return header("X-Client-Version", "0/0.0.0.0").connect("PUT", new byte[0]);
         }
 
         public E_TYPE put(String data) throws ConnectionException {
-            return connect("PUT", data);
+            return header("X-Client-Version", "0/0.0.0.0").connect("PUT", data);
         }
 
         public E_TYPE put(JsonValue json) throws ConnectionException {
-            return header("Content-Type", "application/json").connect("PUT", json.toString());
+            return header("X-Client-Version", "0/0.0.0.0").header("Content-Type", "application/json").connect("PUT", json.toString());
         }
 
         public E_TYPE connect(String method, String data) throws ConnectionException {
@@ -359,8 +355,16 @@ public class Endpoints {
                     }
                     this.url = new URL(surl);
                 }
-                connection = (HttpURLConnection) url.openConnection();
+
+                if(proxy != null) {
+                    connection = (HttpURLConnection) url.openConnection(proxy);
+                }
+                else {
+                    connection = (HttpURLConnection) url.openConnection();
+                }
+
                 connection.setRequestMethod(method);
+
                 connection.setInstanceFollowRedirects(false);
                 for (Map.Entry<String, String> ent : headers.entrySet()) {
                     connection.setRequestProperty(ent.getKey(), ent.getValue());

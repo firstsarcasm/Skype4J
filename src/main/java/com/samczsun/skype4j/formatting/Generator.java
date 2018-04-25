@@ -21,18 +21,18 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.samczsun.skype4j.internal.StreamUtils;
 import com.samczsun.skype4j.internal.Utils;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+
+import static com.samczsun.skype4j.SkypeBuilder.proxy;
 
 public class Generator {
     private static final String LANG = "en"; //Change to whatever lang you want
@@ -41,14 +41,22 @@ public class Generator {
     public static void main(String[] args) throws Exception {
         URL url = new URL(
                 "https://a.config.skype.com/config/v1/Skype/" + VERSION + "/SkypePersonalization?apikey=skype.com&id=self&callback=Skype4J");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+        HttpURLConnection connection;
+        if (proxy != null) {
+            connection = (HttpURLConnection) url.openConnection(proxy);
+        }
+        else {
+            connection = (HttpURLConnection) url.openConnection();
+        }
+
         connection.setRequestProperty("User-Agent", "Skype4J");
         String str = StreamUtils.readFully(connection.getInputStream());
         JsonObject object = JsonObject.readFrom(str.substring(12, str.length() - 1));
         String configloc = object.get("pes_config").asString();
         configloc = configloc.substring(0, configloc.lastIndexOf('/') + 1);
         URL config = new URL(configloc + LANG);
-        connection = (HttpURLConnection) config.openConnection();
+        connection = (HttpURLConnection) config.openConnection(proxy);
         connection.setRequestProperty("User-Agent", "Skype4J");
         JsonObject root = Utils.parseJsonObject(connection.getInputStream());
         JsonArray items = root.get("items").asArray();
@@ -68,9 +76,11 @@ public class Generator {
                 String next = in.nextLine();
                 if (next.startsWith("package")) {
                     pr.println("package com.samczsun.skype4j.formatting.lang." + LANG + ";");
-                } else if (next.contains("DefaultEmoticon")) {
+                }
+                else if (next.contains("DefaultEmoticon")) {
                     pr.println(next.replace("DefaultEmoticon", "Emoticon"));
-                } else if (next.trim().equals(";")) {
+                }
+                else if (next.trim().equals(";")) {
                     List<JsonObject> emoticons = new ArrayList<>();
                     for (JsonValue val : items) {
                         if (val.asObject().get("type").asString().equals("emoticon")) {
@@ -89,7 +99,8 @@ public class Generator {
                                 "    %s(\"%s\",\"%s\",\"%s\",%s)" + (i == emoticons.size() - 1 ? ";" : ","), enumname,
                                 id, etag, desc, shortcuts));
                     }
-                } else {
+                }
+                else {
                     pr.println(next);
                 }
             }
@@ -110,9 +121,11 @@ public class Generator {
                 String next = in.nextLine();
                 if (next.startsWith("package")) {
                     pr.println("package com.samczsun.skype4j.formatting.lang." + LANG + ";");
-                } else if (next.contains("DefaultFlik")) {
+                }
+                else if (next.contains("DefaultFlik")) {
                     pr.println(next.replace("DefaultFlik", "Flik"));
-                } else if (next.trim().equals(";")) {
+                }
+                else if (next.trim().equals(";")) {
                     List<JsonObject> emoticons = new ArrayList<>();
                     for (JsonValue val : items) {
                         if (val.asObject().get("type").asString().equals("flik")) {
@@ -140,7 +153,8 @@ public class Generator {
                                 "    %s(\"%s\", \"%s\", \"%s\")" + (i == emoticons.size() - 1 ? ";" : ","), enumname,
                                 id, etag, desc));
                     }
-                } else {
+                }
+                else {
                     pr.println(next);
                 }
             }

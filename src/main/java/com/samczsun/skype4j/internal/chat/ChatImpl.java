@@ -148,6 +148,8 @@ public abstract class ChatImpl implements Chat {
             obj.add("contenttype", "text");
             obj.add("clientmessageid", String.valueOf(ms));
 
+            System.out.println(obj);
+
             Endpoints.SEND_MESSAGE_URL.open(getClient(), getIdentity()).expect(201, "While sending message").post(obj);
         } catch (IOException e) {
             throw ExceptionHandler.generateException("While sending message", e);

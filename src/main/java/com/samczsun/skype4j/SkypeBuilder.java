@@ -20,6 +20,8 @@ import com.samczsun.skype4j.exceptions.handler.ErrorHandler;
 import com.samczsun.skype4j.internal.client.FullClient;
 import com.samczsun.skype4j.internal.client.GuestClient;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -35,6 +37,8 @@ public class SkypeBuilder {
     private List<ErrorHandler> errorHandlers = new ArrayList<>();
     private Logger customLogger;
     private String chatId;
+    public static InetSocketAddress socketAddress;
+    public static Proxy proxy;
 
     /**
      * Construct a SkypeBuilder with the given username and password
@@ -55,6 +59,12 @@ public class SkypeBuilder {
     public SkypeBuilder(String username) {
         this.username = username;
         this.password = null;
+    }
+
+    public SkypeBuilder withProxy(String host, int port) {
+        socketAddress = new InetSocketAddress(host, port);
+        proxy = new Proxy(Proxy.Type.HTTP, socketAddress);
+        return this;
     }
 
     /**
@@ -124,9 +134,11 @@ public class SkypeBuilder {
         }
         if (password != null) {
             return new FullClient(username, password, resources, customLogger, errorHandlers);
-        } else if (chatId != null) {
+        }
+        else if (chatId != null) {
             return new GuestClient(username, chatId, resources, customLogger, errorHandlers);
-        } else {
+        }
+        else {
             throw new IllegalArgumentException("No chat specified");
         }
     }

@@ -1,9 +1,5 @@
 # Skype4J
 
-[![Build Status](https://ci.samczsun.com/buildStatus/icon?job=Skype4J)](https://ci.samczsun.com/job/Skype4J/)
-
-This is a Skype API for Java. It does not support P2P chats. You can tell whether you're in a P2P chat or not based on the output of the `/help` command. If it contains commands such as `/kickban`, you're in a P2P chat and should switch to cloud chats immediately (try using `/fork`).
-
 Here is an example of using this API to log into your Skype account.
 
 ```java
@@ -38,21 +34,6 @@ skype.logout();
 
 For more examples, please consult the [wiki](https://github.com/samczsun/Skype4J/wiki)
 
-## Maven
-
-Maven is used for dependency management and deployment. To use this API, simply add the following to your pom.xml
-
-```
-<dependency>
-  <groupId>com.samczsun</groupId>
-  <artifactId>skype4j</artifactId>
-  <version>0.1.5</version>
-</dependency>
-```
-
-You can also download the latest build of this project from [Jenkins](https://ci.samczsun.com/job/Skype4J/)  
-If you want to use Maven with the latest build and don't want to manually install, [JitPack](https://jitpack.io/#samczsun/skype4j) may do the trick.
-
 ## JavaDocs
 
 JavaDocs can be found [here](https://samczsun.github.io/Skype4J/)
@@ -71,12 +52,3 @@ This simply gives myself, or whoever is maintaining the project, the right to re
 The CLA can be found in the root directory of the project, in the file called "CLA". Please read it carefully.
 
 You only need to submit your CLA once, so if you've already signed a CLA there's no need to do it again.
-
-## Acknowledgements
-
-![YourKit](https://www.yourkit.com/images/yklogo.png)
-
-YourKit supports open source projects with its full-featured Java Profiler.
-
-YourKit, LLC is the creator of [YourKit Java Profiler](https://www.yourkit.com/java/profiler/index.jsp)
-and [YourKit .NET Profiler](https://www.yourkit.com/.net/profiler/index.jsp), innovative and intelligent tools for profiling Java and .NET applications.

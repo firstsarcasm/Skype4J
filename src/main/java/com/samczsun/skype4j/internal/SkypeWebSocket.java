@@ -20,16 +20,6 @@ import com.eclipsesource.json.JsonObject;
 import com.samczsun.skype4j.exceptions.ConnectionException;
 import com.samczsun.skype4j.exceptions.handler.ErrorSource;
 import com.samczsun.skype4j.internal.client.FullClient;
-import org.java_websocket.SSLSocketChannel2;
-import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.drafts.Draft_17;
-import org.java_websocket.handshake.ServerHandshake;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -43,6 +33,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
+import org.java_websocket.SSLSocketChannel2;
+import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.drafts.Draft_17;
+import org.java_websocket.handshake.ServerHandshake;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import static com.samczsun.skype4j.SkypeBuilder.socketAddress;
 
 public class SkypeWebSocket extends WebSocketClient {
     private final SkypeImpl skype;
@@ -56,16 +58,23 @@ public class SkypeWebSocket extends WebSocketClient {
         TrustManager[] trustAllCerts = new TrustManager[]{new TrustAllManager()};
         SSLContext sc = SSLContext.getInstance("SSL");
         sc.init(null, trustAllCerts, new java.security.SecureRandom());
+        if (socketAddress != null) {
+            this.setProxy(socketAddress);
+        }
+
         this.setWebSocketFactory(new DefaultSSLWebSocketClientFactory(sc, singleThreaded) {
             private boolean called = false;
+
 
             @Override
             public ByteChannel wrapChannel(SocketChannel channel, SelectionKey key, String host, int port) throws IOException {
                 if (!called) {
                     Thread.currentThread().setName("Skype4J-WSMainThread-" + skype.getUsername());
                 }
+
                 SSLEngine e = sslcontext.createSSLEngine(host, port);
                 e.setUseClientMode(true);
+
                 ByteChannel c = new SSLSocketChannel2(channel, e, exec, key) {
                     private boolean called = false;
 

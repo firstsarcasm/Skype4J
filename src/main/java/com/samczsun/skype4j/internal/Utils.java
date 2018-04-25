@@ -61,6 +61,7 @@ public class Utils {
     public static String upload(byte[] data, ImageType type, JsonObject extra, ChatImpl chat) throws ConnectionException {
         JsonObject obj = new JsonObject();
         obj.add("type", type.mime);
+        obj.add("X-Client-Version", "0/0.0.0.0");
         obj.add("permissions", new JsonObject().add(chat.getIdentity(), new JsonArray().add("read")));
         if (extra != null) extra.forEach(m -> obj.add(m.getName(), m.getValue()));
 
