@@ -65,7 +65,6 @@ public class SkypeWebSocket extends WebSocketClient {
         this.setWebSocketFactory(new DefaultSSLWebSocketClientFactory(sc, singleThreaded) {
             private boolean called = false;
 
-
             @Override
             public ByteChannel wrapChannel(SocketChannel channel, SelectionKey key, String host, int port) throws IOException {
                 if (!called) {
